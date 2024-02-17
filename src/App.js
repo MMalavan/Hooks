@@ -24,7 +24,7 @@ function capitalizeFirstLetter(string) {
 }
 
 function isValidEmail(email) {
-  return /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email);
+  return /\S+@\S+\.\S+/.test(email);
 }
 
 function isValidPhone(phone) {
@@ -57,7 +57,6 @@ function EnhancedTable() {
 
   const handleDelete = (index) => {
     if (editMode && selected[0] === index) {
-      alert('Cannot delete a row while in edit mode.');
       return;
     }
     const updatedUsers = [...users];
@@ -74,6 +73,21 @@ function EnhancedTable() {
   };
 
   const handleSaveEdit = () => {
+    if (!formData.name || !formData.email || !formData.phone) {
+      alert('Please fill all input fields');
+      return;
+    }
+
+    if (!isValidEmail(formData.email)) {
+      alert('Invalid email');
+      return;
+    }
+
+    if (!isValidPhone(formData.phone)) {
+      alert('Invalid phone number');
+      return;
+    }
+
     const updatedUsers = [...users];
     updatedUsers[selected[0]] = { ...formData };
     setUsers(updatedUsers);
@@ -84,7 +98,7 @@ function EnhancedTable() {
 
   const handleAdd = () => {
     if (!formData.name || !formData.email || !formData.phone) {
-      alert('Please fill all input fields and click Add button.');
+      alert('Please fill all input fields');
       return;
     }
 
@@ -107,6 +121,7 @@ function EnhancedTable() {
     updatedUsers.push(newUser);
     setUsers(updatedUsers);
     setFormData({ name: '', email: '', phone: '' });
+    setSelected([]);
   };
 
   const handleNameChange = (e) => {
@@ -242,7 +257,7 @@ function EnhancedTable() {
                       <IconButton aria-label="edit" onClick={() => handleEdit(page * rowsPerPage + index)}>
                         <EditIcon />
                       </IconButton>
-                      <IconButton aria-label="delete" onClick={() => handleDelete(page * rowsPerPage + index)}>
+                      <IconButton aria-label="delete" onClick={() => handleDelete(page * rowsPerPage + index)} disabled={editMode && selected[0] === page * rowsPerPage + index}>
                         <DeleteIcon />
                       </IconButton>
                     </TableCell>
